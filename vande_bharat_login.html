@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Sign Up</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        .login-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+        }
+        .tab-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #dee2e6;
+            background: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tab-button.active {
+            background: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+        }
+        .form-container > div:not(.active) {
+            display: none;
+        }
+        .password-field {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <section class="d-flex align-items-center justify-content-center" style="background-color: 9E9E9E; min-height: 100vh;">
+    <div class="login-card">
+        <div class="tab-buttons">
+            <button class="tab-button active" onclick="switchTab('login')">Login</button>
+            <button class="tab-button" onclick="switchTab('signup')">Sign Up</button>
+        </div>
+
+        <div class="form-container">
+            <!-- Login Form -->
+            <div id="login-form" class="active">
+                <form onsubmit="handleLogin(event)">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="login-username" placeholder="Username" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="tel" class="form-control" id="login-mobile" placeholder="Mobile Number" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" id="login-email" placeholder="Email" required>
+                    </div>
+                    <div class="mb-3 password-field">
+                        <input type="password" class="form-control" id="login-password" 
+                               placeholder="Password (8+ chars, 1 capital, 1 number, 1 symbol)" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword('login-password')">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100" id="login-button" disabled>
+                        Login
+                    </button>
+                </form>
+            </div>
+
+            <!-- Sign Up Form -->
+            <div id="signup-form">
+                <form onsubmit="handleSignup(event)">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="signup-username" placeholder="Username" required>
+                    </div>
+                    <div class="mb-3 password-field">
+                        <input type="password" class="form-control" id="signup-password" 
+                               placeholder="Password (8+ chars, 1 capital, 1 number, 1 symbol)" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword('signup-password')">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100" id="signup-button" disabled>
+                        Sign Up
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    </section>
+
+    <script>
+        // Function to switch between login and signup tabs
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.querySelectorAll('.form-container > div').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            document.querySelector(`#${tab}-form`).classList.add('active');
+            document.querySelector(`.tab-button:nth-child(${tab === 'login' ? '1' : '2'})`).classList.add('active');
+        }
+
+        // Function to toggle password visibility
+        function togglePassword(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = passwordInput.nextElementSibling.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Password validation function
+        function isPasswordValid(password) {
+            const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+            return passwordRegex.test(password);
+        }
+
+        // Function to validate login form
+        function validateLoginForm() {
+            const username = document.getElementById('login-username').value;
+            const mobile = document.getElementById('login-mobile').value;
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            const isValid = username && 
+                          mobile && 
+                          email.includes('@') && 
+                          isPasswordValid(password);
+            
+            document.getElementById('login-button').disabled = !isValid;
+        }
+
+        // Function to validate signup form
+        function validateSignupForm() {
+            const username = document.getElementById('signup-username').value;
+            const password = document.getElementById('signup-password').value;
+            
+            const isValid = username && isPasswordValid(password);
+            document.getElementById('signup-button').disabled = !isValid;
+        }
+
+        // Form submission handlers
+        function handleLogin(event) {
+            event.preventDefault();
+            console.log('Login form submitted');
+            // Add your login logic here
+        }
+
+        function handleSignup(event) {
+            event.preventDefault();
+            console.log('Signup form submitted');
+            // Add your signup logic here
+        }
+
+        // Add event listeners for form validation
+        document.querySelectorAll('#login-form input').forEach(input => {
+            input.addEventListener('input', validateLoginForm);
+        });
+
+        document.querySelectorAll('#signup-form input').forEach(input => {
+            input.addEventListener('input', validateSignupForm);
+        });
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
